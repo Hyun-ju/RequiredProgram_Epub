@@ -22,6 +22,36 @@ namespace WPF_RemoveLine
 			get { return _textBox2; }
 			set { Set(ref _textBox2, value); }
 		}
+
+		private bool _isCheckAll = true;
+		public bool IsCheckAll
+		{
+			get { return _isCheckAll; }
+			set { 
+				Set(ref _isCheckAll, value);
+				IsCheckQue = value;
+				IsCheckQuo = value;
+				IsCheckBra = value;
+			}
+		}
+		private bool _isCheckQue = true;
+		public bool IsCheckQue
+		{
+			get { return _isCheckQue; }
+			set { Set(ref _isCheckQue, value); }
+		}
+		private bool _isCheckQuo = true;
+		public bool IsCheckQuo
+		{
+			get { return _isCheckQuo; }
+			set { Set(ref _isCheckQuo, value); }
+		}
+		private bool _isCheckBra = true;
+		public bool IsCheckBra
+		{
+			get { return _isCheckBra; }
+			set { Set(ref _isCheckBra, value); }
+		}
 		#endregion
 		#region command
 		public RelayCommand CmdConvert { get; set; }
@@ -34,7 +64,6 @@ namespace WPF_RemoveLine
 			CmdConvert = new RelayCommand(Convert);
 			CmdCopy = new RelayCommand(Copy);
 			CmdClear = new RelayCommand(Clear);
-
 		}
 
 		public void Convert()
@@ -53,45 +82,71 @@ namespace WPF_RemoveLine
 			//개행 조건 설정
 			for (int i = content.Count - 1; i > 0; i--)
 			{
-				var stringA = content[i];
-				var stringB = content[i - 1];
+				var stringCurrent = content[i];
+				var stringPre = content[i - 1];
 
-				//페이지번호, "/'
-				if (int.TryParse(stringA, out var pageNumA)
-					|| stringA.StartsWith("\"")
-					|| stringA.StartsWith("\'")
-					|| stringA.StartsWith("“")
-					|| stringA.StartsWith("‘")
-					|| int.TryParse(stringB, out var pageNumB)
-					|| stringB.EndsWith("\"")
-					|| stringB.EndsWith("\'")
-					|| stringB.EndsWith("”")
-					|| stringB.EndsWith("’")) continue;
+				//페이지번호
+				if (int.TryParse(stringCurrent, out var pageNumA)
+					|| int.TryParse(stringPre, out var pageNumB)) continue;
+
+				//따옴표
+				if (IsCheckQuo
+					&& (stringCurrent.StartsWith("\"")
+					|| stringCurrent.StartsWith("\'")
+					|| stringCurrent.StartsWith("“")
+					|| stringCurrent.StartsWith("‘")
+					|| stringPre.EndsWith("\"")
+					|| stringPre.EndsWith("\'")
+					|| stringPre.EndsWith("”")
+					|| stringPre.EndsWith("’"))) continue;
+
+				//[ 및 ]
+				if (IsCheckBra
+					&& (stringCurrent.StartsWith("[")
+					|| stringPre.EndsWith("]"))) continue;
 
 				//제N장, 제N부
-				if ((stringA.EndsWith("장") || stringA.EndsWith("부"))
-					|| (stringB.EndsWith("장") || stringB.EndsWith("부")))
+				if (stringPre.Length >= 4 && stringPre.StartsWith("제 ") && char.IsNumber(stringPre[2]))
 				{
-					if ((stringB.StartsWith("제 ") || stringB.StartsWith("제"))
-						|| (stringA.StartsWith("제 ") || stringA.StartsWith("제"))) continue;
-					else if (int.TryParse(stringA[stringA.Length - 2].ToString(), out var intA)
-						|| int.TryParse(stringB[stringB.Length - 2].ToString(), out var intB)) continue;
+					int ind = IsNum(stringPre, 2);
+					if (ind < stringPre.Length && IsHeader(stringPre, ind)) continue;
+					else if (ind + 1 < stringPre.Length && IsHeader(stringPre, ind + 1)) continue;
+				}
+				else if (stringCurrent.Length >= 4 && stringCurrent.StartsWith("제 ") && char.IsNumber(stringCurrent[2]))
+				{
+					int ind = IsNum(stringCurrent, 2);
+					if (ind < stringCurrent.Length && IsHeader(stringCurrent, ind)) continue;
+					else if (ind + 1 < stringCurrent.Length && IsHeader(stringCurrent, ind + 1)) continue;
+				}
+				else if (stringPre.Length >= 3 && stringPre.StartsWith("제") && char.IsNumber(stringPre[1]))
+				{
+					int ind = IsNum(stringPre, 1);
+					if (ind < stringPre.Length && IsHeader(stringPre, ind)) continue;
+					else if (ind + 1 < stringPre.Length && IsHeader(stringPre, ind + 1)) continue;
+				}
+				else if (stringCurrent.Length >= 3 && stringCurrent.StartsWith("제") && char.IsNumber(stringCurrent[1]))
+				{
+					int ind = IsNum(stringCurrent, 1);
+					if (ind < stringCurrent.Length && IsHeader(stringCurrent, ind)) continue;
+					else if (ind + 1 < stringCurrent.Length && IsHeader(stringCurrent, ind + 1)) continue;
 				}
 
+
 				//각주, 미주
-				if (stringA.StartsWith("각주")
-					|| stringA.StartsWith("미주")
-					|| stringA.StartsWith("주*")
-					|| stringA.StartsWith("*")
-					|| stringA.StartsWith("(미주")
-					|| stringA.StartsWith("(각주")
-					|| stringA.StartsWith("(주*")
-					|| stringA.StartsWith("(*")) continue;
+				if (stringCurrent.StartsWith("각주")
+					|| stringCurrent.StartsWith("미주")
+					|| stringCurrent.StartsWith("주*")
+					|| stringCurrent.StartsWith("*")
+					|| stringCurrent.StartsWith("(미주")
+					|| stringCurrent.StartsWith("(각주")
+					|| stringCurrent.StartsWith("(주*")
+					|| stringCurrent.StartsWith("(*")) continue;
 
-				if (stringB.EndsWith(".")) continue;
-				if (stringB.EndsWith("!")) continue;
+				if (stringPre.EndsWith(".")) continue;
+				if (stringPre.EndsWith("!")) continue;
+				if (IsCheckQue && stringPre.EndsWith("?")) continue;
 
-				content[i - 1] += stringA;
+				content[i - 1] += stringCurrent;
 				content.RemoveAt(i);
 			}
 
@@ -197,10 +252,23 @@ namespace WPF_RemoveLine
 			TextBox2 = string.Empty;
 		}
 
+		public int IsNum(string str, int indexN)
+		{
+			if (str.Length > indexN && char.IsNumber(str[indexN])) 
+				return IsNum(str, indexN + 1);
+			else return indexN;
+		}
+		//부 및 장 판단 함수
+		public bool IsHeader(string str, int indexN)
+		{
+			return str[indexN] == '부' || str[indexN] == '장';
+		}
+		//한글 판단 함수
 		public bool IsKor(char checkChar)
 		{
 			return (checkChar >= '\uAC00' && checkChar <= '\uD7A3');
 		}
+		//한문 판단 함수
 		public bool IsHan(char checkChar)
 		{
 			bool ch1 = (checkChar >= '\u2E80' && checkChar <= '\u2EFF');
