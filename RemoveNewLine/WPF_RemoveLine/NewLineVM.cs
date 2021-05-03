@@ -1,14 +1,45 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace WPF_RemoveLine
 {
+	public class CheckBoxList:ObservableObject
+	{
+		public string Text { get; set; }
+		private bool _isCheck = true;
+		public bool IsChecked
+		{
+			get { return _isCheck; }
+			set { Set(ref _isCheck, value); }
+		}
+
+		public CheckBoxList(string text)
+		{
+			Text = text;
+		}
+	}
+
 	public class NewLineVM : ViewModelBase
 	{
 		#region feild
+		readonly Regex KorRegex = new Regex("[가-힣]|[ㄱ-ㅎ]");
+		readonly Regex HanRegex = new Regex("[\u2E80-\u2EFF]|[\u3400-\u4DB5]|[\u4E00-\u9FFF]");
+		readonly Regex EngRegex = new Regex("[a-zA-Z]");
+		readonly Regex EndMarkRegex = new Regex("[.,!?]");
+		readonly Regex StartQuoRegex = new Regex("[\"\'‘“]");
+		readonly Regex EndQuoRegex = new Regex("[\"\'’”]");
+		readonly Regex NumInCirRegex = new Regex("[①-⑮]");
+
+		readonly List<char> OpenBraList = new List<char>() { '｢', '[', '〔', '〈', '《', '「', '『', '【' };
+		readonly List<char> EndBraList = new List<char>() { '｣', ']', '〕', '〉', '》', '」', '』', '】' };
+		//readonly Regex OpenBraRegex = new Regex("[〔〈《「『【]");
+		//readonly Regex EndBraRegex = new Regex("[〕〉》」』】]");
+
 		private string _textBox1;
 		public string TextBox1
 		{
@@ -27,30 +58,20 @@ namespace WPF_RemoveLine
 		public bool IsCheckAll
 		{
 			get { return _isCheckAll; }
-			set { 
+			set
+			{
 				Set(ref _isCheckAll, value);
-				IsCheckQue = value;
-				IsCheckQuo = value;
-				IsCheckBra = value;
+				foreach (var item in CheckBoxes)
+					item.IsChecked = value;
 			}
 		}
-		private bool _isCheckQue = true;
-		public bool IsCheckQue
+
+		private List<CheckBoxList> _checkBoxes = new List<CheckBoxList>();
+		public List<CheckBoxList> CheckBoxes
 		{
-			get { return _isCheckQue; }
-			set { Set(ref _isCheckQue, value); }
-		}
-		private bool _isCheckQuo = true;
-		public bool IsCheckQuo
-		{
-			get { return _isCheckQuo; }
-			set { Set(ref _isCheckQuo, value); }
-		}
-		private bool _isCheckBra = true;
-		public bool IsCheckBra
-		{
-			get { return _isCheckBra; }
-			set { Set(ref _isCheckBra, value); }
+			get
+			{ return _checkBoxes; }
+			set { Set(ref _checkBoxes, value); }
 		}
 		#endregion
 		#region command
@@ -61,10 +82,32 @@ namespace WPF_RemoveLine
 
 		public NewLineVM()
 		{
+			CheckBoxes.Add(new CheckBoxList("?"));
+			CheckBoxes.Add(new CheckBoxList("“” 및 ‘’"));
+			CheckBoxes.Add(new CheckBoxList("[ ]"));
+			CheckBoxes.Add(new CheckBoxList("N)"));
+			CheckBoxes.Add(new CheckBoxList("(N)"));
+			CheckBoxes.Add(new CheckBoxList("ⓝ"));
+
 			CmdConvert = new RelayCommand(Convert);
 			CmdCopy = new RelayCommand(Copy);
 			CmdClear = new RelayCommand(Clear);
 		}
+
+		#region 판단 함수 모음
+		public int IsNum(string str, int indexN)
+		{
+			if (str.Length > indexN && char.IsNumber(str[indexN]))
+				return IsNum(str, indexN + 1);
+			else return indexN;
+		}
+		//부 및 장 판단 함수
+		public bool IsHeader(string str, int indexN)
+		{
+			return str[indexN].Equals('부') || str[indexN].Equals('장');
+		}
+		#endregion
+
 
 		public void Convert()
 		{
@@ -73,10 +116,9 @@ namespace WPF_RemoveLine
 			content = TextBox1.Split(splitString, StringSplitOptions.RemoveEmptyEntries).ToList();
 
 			for (int i = 0; i < content.Count; i++) content[i] = content[i].Trim();
-			for (int i = content.Count - 1; i > 0; i--)
+			for (int i = content.Count - 1; i >= 0; i--)
 			{
-				if (string.IsNullOrEmpty(content[i])) content.RemoveAt(i);
-				else if (content[i].StartsWith(" ")) content.RemoveAt(i);
+				if (string.IsNullOrEmpty(content[i]) || string.IsNullOrWhiteSpace(content[i]) || content[i].Equals("​")) content.RemoveAt(i);
 			}
 
 			//개행 조건 설정
@@ -90,18 +132,12 @@ namespace WPF_RemoveLine
 					|| int.TryParse(stringPre, out var pageNumB)) continue;
 
 				//따옴표
-				if (IsCheckQuo
-					&& (stringCurrent.StartsWith("\"")
-					|| stringCurrent.StartsWith("\'")
-					|| stringCurrent.StartsWith("“")
-					|| stringCurrent.StartsWith("‘")
-					|| stringPre.EndsWith("\"")
-					|| stringPre.EndsWith("\'")
-					|| stringPre.EndsWith("”")
-					|| stringPre.EndsWith("’"))) continue;
+				if (CheckBoxes[1].IsChecked
+					&& (StartQuoRegex.IsMatch(stringCurrent[0].ToString()) 
+						|| EndQuoRegex.IsMatch(stringPre[stringPre.Length-1].ToString()))) continue;
 
 				//[ 및 ]
-				if (IsCheckBra
+				if (CheckBoxes[2].IsChecked
 					&& (stringCurrent.StartsWith("[")
 					|| stringPre.EndsWith("]"))) continue;
 
@@ -132,6 +168,20 @@ namespace WPF_RemoveLine
 				}
 
 
+				//1)
+				if (CheckBoxes[3].IsChecked && ((char.IsNumber(stringCurrent[0]) && stringCurrent[IsNum(stringCurrent, 0)].Equals(')'))
+					|| (char.IsNumber(stringPre[0]) && stringPre[IsNum(stringPre, 0)].Equals(')')))) continue;
+				//(1)
+				if (CheckBoxes[4].IsChecked &&
+					((stringCurrent[0].Equals('(')
+				&& char.IsNumber(stringCurrent[1]) && stringCurrent[IsNum(stringCurrent, 1)].Equals(')'))
+				|| (stringPre[0].Equals('(')
+				&& char.IsNumber(stringPre[1]) && stringPre[IsNum(stringPre, 1)].Equals(')')))) continue;
+				//①
+				if (CheckBoxes[5].IsChecked &&
+					NumInCirRegex.IsMatch(stringCurrent[0].ToString()) || NumInCirRegex.IsMatch(stringPre[0].ToString())) continue;
+
+
 				//각주, 미주
 				if (stringCurrent.StartsWith("각주")
 					|| stringCurrent.StartsWith("미주")
@@ -142,139 +192,126 @@ namespace WPF_RemoveLine
 					|| stringCurrent.StartsWith("(주*")
 					|| stringCurrent.StartsWith("(*")) continue;
 
+
+				//<span> <h>태그
+				if (stringCurrent.StartsWith("<span") || stringPre.StartsWith("<span")
+					|| stringCurrent.StartsWith("<h") || stringPre.StartsWith("<h")) continue;
+
+
 				if (stringPre.EndsWith(".")) continue;
 				if (stringPre.EndsWith("!")) continue;
-				if (IsCheckQue && stringPre.EndsWith("?")) continue;
+				if (CheckBoxes[0].IsChecked && stringPre.EndsWith("?")) continue;
 
 				content[i - 1] += stringCurrent;
 				content.RemoveAt(i);
 			}
 
-			//한자 및 영어 체크
+			//한자 체크
 			for (int row = 0; row < content.Count(); row++)
 			{
 				var nowRow = content[row];
-				var strContent = string.Empty;
-				int startIndex = -1;
-				for (int i = 0; i < nowRow.Length; i++)
-				{
-					if (i == 0 || nowRow[i] == ' ')
-					{
-						strContent += nowRow[i];
-						continue;
-					}
 
-					if (IsHan(nowRow[i]))
+				if (!HanRegex.IsMatch(nowRow)) continue;
+				bool isOpen = false;
+				for (int i = 1; i < nowRow.Length; i++)
+				{
+					if (!HanRegex.IsMatch(nowRow[i].ToString())) continue;
+
+					if (!isOpen && KorRegex.IsMatch(nowRow[i - 1].ToString()))
 					{
-						if (IsKor(nowRow[i - 1]))
-						{
-							if (i + 1 < nowRow.Length && !IsHan(nowRow[i + 1]) && nowRow[i + 1] != ' ')
-							{
-								strContent += ("(" + nowRow[i] + ")");
-								continue;
-							}
-							else if (i + 1 < nowRow.Length && i + 2 < nowRow.Length &&
-								nowRow[i + 1] == ' ' && !IsHan(nowRow[i + 2]))
-							{
-								strContent += ("(" + nowRow[i] + ")");
-								continue;
-							}
-							else
-								strContent += ("(" + nowRow[i]);
-							startIndex = i;
-							continue;
-						}
-						else if (i + 1 < nowRow.Length && !IsHan(nowRow[i + 1]) && nowRow[i + 1] != ' ')
-						{
-							if (startIndex == -1) strContent += nowRow[i];
-							else strContent += (nowRow[i] + ")");
-						}
-						else if (i + 2 < nowRow.Length && !IsHan(nowRow[i + 2]) && nowRow[i + 1] == ' ')
-						{
-							if (startIndex == -1) strContent += nowRow[i];
-							else strContent += (nowRow[i] + ")");
-						}
-						else
-						{
-							strContent += nowRow[i];
-						}
+						nowRow = nowRow.Insert(i, "(");
+						isOpen = true;
 					}
-					else strContent += nowRow[i];
+					if (isOpen && i + 2 < nowRow.Length
+						&& !HanRegex.IsMatch(nowRow[i + 1].ToString()) && !HanRegex.IsMatch(nowRow[i + 2].ToString()))
+					{
+						nowRow = nowRow.Insert(i + 1, ")");
+						isOpen = false;
+					}
 				}
-				content[row] = strContent;
+
+				content[row] = nowRow;
 			}
 
-            // 유니코드 변환
-            for (int i = 0; i < content.Count(); i++)
-            {
+			//유니코드 변환
+			var convertUnicode = new List<List<string>>()
+			{
+				new List<string>(){ "&lt;", "〈" },
+				new List<string>(){ "&gt;", "〉" },
+				new List<string>(){ "&amp;", "＆" },
+				new List<string>(){ "“ ", " “" },
+				new List<string>(){ " ”", "”" },
+				new List<string>(){ "‘ ", " ‘" },
+				new List<string>(){ " ’", "’" },
+			};
+			foreach (var item in OpenBraList)
+			{
+				convertUnicode.Add(new List<string>() { item.ToString(), (" " + item) });
+				convertUnicode.Add(new List<string>() { (item + " "), item.ToString() });
+			}
+			foreach (var item in EndBraList)
+				convertUnicode.Add(new List<string>() { (" " + item), item.ToString() });
+
+			for (int i = 0; i < content.Count(); i++)
+			{
 				string checkStr = content[i];
-				if (!checkStr.Contains("&lt;") && !checkStr.Contains("&gt;") && !checkStr.Contains("&amp;")) continue;
 
-				var insertStr = checkStr.ToArray().ToList();
-				for (int j = insertStr.Count - 1; j >= 0; j--)
+				foreach (var item in convertUnicode)
 				{
-					if (insertStr[j] == '&' && insertStr[j + 2] == 't' &&  insertStr[j + 3] == ';')
-                    {
-						if (insertStr[j + 1] == 'l') insertStr[j] = '〈';
-						else if (insertStr[j + 1] == 'g') insertStr[j] = '〉';
-
-						insertStr.RemoveAt(j + 3);
-						insertStr.RemoveAt(j + 2);
-						insertStr.RemoveAt(j + 1);
-					}
-                    else if (insertStr[j] == '&' && insertStr[j + 1] == 'a' && insertStr[j + 2] == 'm' && insertStr[j + 3] == 'p' && insertStr[j + 4] == ';')
-					{
-						insertStr[j] = '＆';
-						insertStr.RemoveAt(j + 4);
-						insertStr.RemoveAt(j + 3);
-						insertStr.RemoveAt(j + 2);
-						insertStr.RemoveAt(j + 1);
-					}
+					if (checkStr.Contains(item[0]))
+						checkStr = checkStr.Replace(item[0], item[1]);
 				}
-				content[i] = new string(insertStr.ToArray());
-            }
+
+				checkStr = CheckEndMarkAndApos(checkStr, 0);
+				if (checkStr.Contains("  ")) checkStr = MuntiBlankSpace(checkStr);
+
+				content[i] = checkStr.Trim();
+			}
+
 
 			//textBox2에 view
 			TextBox2 = string.Empty;
 			foreach (var item in content)
 			{
-				TextBox2 += ("<p>" + item + "</p>" + "\n");
+				if (item.StartsWith("<span") || item.StartsWith("<h")) TextBox2 += (item + "\n\n");
+				else TextBox2 += ("<p>" + item + "</p>" + "\n\n");
 			}
 		}
+
+		public string MuntiBlankSpace(string checkString)
+		{
+			checkString = checkString.Replace("  ", " ");
+			if (checkString.Contains("  ")) MuntiBlankSpace(checkString);
+			return checkString;
+		}
+		public string CheckEndMarkAndApos(string checkString, int checkIndex)
+		{
+			if (checkIndex >= checkString.Length - 1) return new string(checkString.ToArray());
+			if (EndMarkRegex.IsMatch(checkString[checkIndex].ToString()) && !checkString[checkIndex + 1].Equals(' '))
+				checkString = checkString.Insert(checkIndex + 1, " ");
+			if ((checkString[checkIndex].Equals('‘') || checkString[checkIndex].Equals('’'))
+				 && checkIndex > 0 && checkIndex < checkString.Length - 1 && EngRegex.IsMatch(checkString[checkIndex - 1].ToString()))
+			{
+				if (EngRegex.IsMatch(checkString[checkIndex + 1].ToString())
+					|| (checkIndex < checkString.Length - 2 && char.IsWhiteSpace(checkString[checkIndex + 1]) && EngRegex.IsMatch(checkString[checkIndex + 1].ToString())))
+				{
+					checkString = checkString.Remove(checkIndex, 1);
+					checkString = checkString.Insert(checkIndex, "\'");
+				}
+			}
+
+			CheckEndMarkAndApos(checkString, ++checkIndex);
+			return new string(checkString.ToArray());
+		}
+
 		public void Copy()
 		{
 			System.Windows.Clipboard.SetText(TextBox2);
-
 		}
 		public void Clear()
 		{
 			TextBox1 = string.Empty;
 			TextBox2 = string.Empty;
-		}
-
-		public int IsNum(string str, int indexN)
-		{
-			if (str.Length > indexN && char.IsNumber(str[indexN])) 
-				return IsNum(str, indexN + 1);
-			else return indexN;
-		}
-		//부 및 장 판단 함수
-		public bool IsHeader(string str, int indexN)
-		{
-			return str[indexN] == '부' || str[indexN] == '장';
-		}
-		//한글 판단 함수
-		public bool IsKor(char checkChar)
-		{
-			return (checkChar >= '\uAC00' && checkChar <= '\uD7A3');
-		}
-		//한문 판단 함수
-		public bool IsHan(char checkChar)
-		{
-			bool ch1 = (checkChar >= '\u2E80' && checkChar <= '\u2EFF');
-			bool ch2 = (checkChar >= '\u3400' && checkChar <= '\u4DB5');
-			bool ch3 = (checkChar >= '\u4E00' && checkChar <= '\u9FFF');
-			return ch1 || ch2 || ch3;
 		}
 	}
 }

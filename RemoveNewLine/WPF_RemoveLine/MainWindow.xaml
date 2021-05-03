@@ -12,7 +12,7 @@
     <Window.DataContext>
         <vm:NewLineVM/>
     </Window.DataContext>
-    
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*"/>
@@ -21,12 +21,12 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="10"/>
-            <RowDefinition Height="25"/>
+            <RowDefinition Height="35"/>
             <RowDefinition Height="20"/>
             <RowDefinition Height="1*"/>
             <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
-        
+
         <StackPanel Grid.Column="0"
                     Grid.ColumnSpan="3"
                     Grid.Row="0"
@@ -35,33 +35,42 @@
                        FontSize="8"
                        Margin="5 0 0 0"/>
         </StackPanel>
-
+        
         <StackPanel Orientation="Horizontal"
                     Grid.Row="1"
                     Grid.ColumnSpan="3"
-                    VerticalAlignment="Top"
+                    VerticalAlignment="Center"
                     HorizontalAlignment="Center">
-            <TextBlock Text="개행 조건: "
+            <TextBlock VerticalAlignment="Center"
+                       Text="개행 조건: "
                        FontSize="14"
                        Margin="0 0 10 0"/>
-            <CheckBox Content="모두 체크/체크 풀기"
+            <CheckBox  VerticalAlignment="Center"
+                       Content="모두 체크/풀기"
                       FontSize="14"
-                      Margin="5 0 10 0"
+                      Margin="5 0 8 0"
                       IsChecked="{Binding IsCheckAll}"/>
-            <CheckBox Content="‘?’"
-                      FontSize="14"
-                      Margin="10 0 10 0"
-                      IsChecked="{Binding IsCheckQue}"/>
-            <CheckBox Content="“”및‘’"
-                      FontSize="14"
-                      Margin="10 0 10 0"
-                      IsChecked="{Binding IsCheckQuo}"/>
-            <CheckBox Content="[ ]"
-                      FontSize="14"
-                      Margin="10 0 0 0"
-                      IsChecked="{Binding IsCheckBra}"/>
+            <ListView ItemsSource="{Binding CheckBoxes}"
+                       VerticalAlignment="Center">
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <CheckBox  VerticalAlignment="Center"
+                                   Content="{Binding Text}"
+                                  FontSize="14"
+                                   FontFamily="돋움"
+                                  Margin="8 0 8 0"
+                                  IsChecked="{Binding IsChecked}"/>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
         </StackPanel>
-        
+
+
         <StackPanel Grid.Column="0"
                     Grid.Row="2"
                     Orientation="Horizontal"
@@ -83,18 +92,18 @@
                     Grid.Row="3"
                     Margin="5 0 0 0">
 
-            <TextBox Height="380"
-                     VerticalScrollBarVisibility="Auto"
+            <TextBox VerticalScrollBarVisibility="Auto"
                      Text="{Binding TextBox1}"
                      TextWrapping="Wrap"
                      AcceptsReturn="True"
+                     Height="370"
                      />
         </StackPanel>
-        
+
         <StackPanel Grid.Column="2"
                     Grid.Row="3"
                     Margin="0 0 5 0">
-            <TextBox Height="380"
+            <TextBox Height="370"
                      VerticalScrollBarVisibility="Auto"
                      Text="{Binding TextBox2}"
                      TextWrapping="Wrap"
@@ -110,7 +119,7 @@
                     Command="{Binding CmdConvert}"/>
         </StackPanel>
 
-        
+
         <StackPanel Grid.Row="4"
                     Grid.ColumnSpan="3"
                     Orientation="Horizontal"
@@ -121,7 +130,7 @@
                     Height="30"
                     Margin="0 0 10 0"
                     Command="{Binding CmdCopy}"/>
-            
+
             <Button Content="내용 지우기"
                     Width="90"
                     Height="30"

@@ -2,11 +2,11 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <PublishUrlHistory>C:\Users\hyunb\Desktop\RequiredProgramDownload\|C:\Users\hj.kim\Desktop\Checking\RequiredProgramDownload\개행정리\|C:\Users\hj.kim\Desktop\Checking\RequiredProgramDownload\|C:\Users\hyunb\Desktop\RequiredProgram\개행정리\다운로드파일\|C:\Users\hyunb\Desktop\BoinIT\WPF_RemoveLine\WPF_RemoveLine\개행정리\</PublishUrlHistory>
-    <InstallUrlHistory />
-    <SupportUrlHistory />
-    <UpdateUrlHistory />
-    <BootstrapperUrlHistory />
-    <ErrorReportUrlHistory />
+    <InstallUrlHistory>https://github.com/Hyun-ju/RequiredProgramDownload/</InstallUrlHistory>
+    <SupportUrlHistory>https://github.com/Hyun-ju/RequiredProgramDownload</SupportUrlHistory>
+    <UpdateUrlHistory>https://github.com/Hyun-ju/RequiredProgramDownload/</UpdateUrlHistory>
+    <BootstrapperUrlHistory>https://github.com/Hyun-ju/RequiredProgramDownload</BootstrapperUrlHistory>
+    <ErrorReportUrlHistory>https://github.com/Hyun-ju/RequiredProgramDownload</ErrorReportUrlHistory>
     <FallbackCulture>ko-KR</FallbackCulture>
     <VerifyUploadedFiles>false</VerifyUploadedFiles>
   </PropertyGroup>
