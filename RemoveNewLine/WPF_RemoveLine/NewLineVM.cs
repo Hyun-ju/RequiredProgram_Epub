@@ -99,6 +99,7 @@ namespace WPF_RemoveLine
 		{
 			if (str.Length > indexN && char.IsNumber(str[indexN]))
 				return IsNum(str, indexN + 1);
+			if (str.Length <= indexN) return indexN - 1;
 			else return indexN;
 		}
 		//부 및 장 판단 함수
