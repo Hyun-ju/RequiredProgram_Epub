@@ -88,6 +88,7 @@ namespace WPF_RemoveLine
 			CheckBoxes.Add(new CheckBoxList("N)"));
 			CheckBoxes.Add(new CheckBoxList("(N)"));
 			CheckBoxes.Add(new CheckBoxList("ⓝ"));
+			CheckBoxes.Add(new CheckBoxList("•"));
 
 			CmdConvert = new RelayCommand(Convert);
 			CmdCopy = new RelayCommand(Copy);
@@ -182,6 +183,9 @@ namespace WPF_RemoveLine
 				if (CheckBoxes[5].IsChecked &&
 					NumInCirRegex.IsMatch(stringCurrent[0].ToString()) || NumInCirRegex.IsMatch(stringPre[0].ToString())) continue;
 
+				//•
+				if (CheckBoxes[6].IsChecked &&
+					stringCurrent.StartsWith("•") || stringPre.StartsWith("•")) continue;
 
 				//각주, 미주
 				if (stringCurrent.StartsWith("각주")
