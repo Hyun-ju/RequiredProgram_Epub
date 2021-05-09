@@ -62,16 +62,8 @@ C:\Users\hyunb\Desktop\RequiredProgram_Epub\RemoveNewLine\WPF_RemoveLine\bin\Rel
 C:\Users\hyunb\Desktop\RequiredProgram_Epub\RemoveNewLine\WPF_RemoveLine\bin\Release\RemoveLine.application
 C:\Users\hyunb\Desktop\RequiredProgram_Epub\RemoveNewLine\WPF_RemoveLine\bin\Release\RemoveLine.exe
 C:\Users\hyunb\Desktop\RequiredProgram_Epub\RemoveNewLine\WPF_RemoveLine\bin\Release\RemoveLine.pdb
-C:\Users\hyunb\Desktop\RequiredProgram_Epub\RemoveNewLine\WPF_RemoveLine\bin\Release\CommonServiceLocator.dll
-C:\Users\hyunb\Desktop\RequiredProgram_Epub\RemoveNewLine\WPF_RemoveLine\bin\Release\GalaSoft.MvvmLight.dll
-C:\Users\hyunb\Desktop\RequiredProgram_Epub\RemoveNewLine\WPF_RemoveLine\bin\Release\GalaSoft.MvvmLight.Extras.dll
-C:\Users\hyunb\Desktop\RequiredProgram_Epub\RemoveNewLine\WPF_RemoveLine\bin\Release\GalaSoft.MvvmLight.Platform.dll
-C:\Users\hyunb\Desktop\RequiredProgram_Epub\RemoveNewLine\WPF_RemoveLine\bin\Release\System.Windows.Interactivity.dll
-C:\Users\hyunb\Desktop\RequiredProgram_Epub\RemoveNewLine\WPF_RemoveLine\bin\Release\GalaSoft.MvvmLight.pdb
 C:\Users\hyunb\Desktop\RequiredProgram_Epub\RemoveNewLine\WPF_RemoveLine\bin\Release\GalaSoft.MvvmLight.xml
-C:\Users\hyunb\Desktop\RequiredProgram_Epub\RemoveNewLine\WPF_RemoveLine\bin\Release\GalaSoft.MvvmLight.Extras.pdb
 C:\Users\hyunb\Desktop\RequiredProgram_Epub\RemoveNewLine\WPF_RemoveLine\bin\Release\GalaSoft.MvvmLight.Extras.xml
-C:\Users\hyunb\Desktop\RequiredProgram_Epub\RemoveNewLine\WPF_RemoveLine\bin\Release\GalaSoft.MvvmLight.Platform.pdb
 C:\Users\hyunb\Desktop\RequiredProgram_Epub\RemoveNewLine\WPF_RemoveLine\bin\Release\GalaSoft.MvvmLight.Platform.xml
 C:\Users\hyunb\Desktop\RequiredProgram_Epub\RemoveNewLine\WPF_RemoveLine\obj\Release\WPF_RemoveLine.csprojAssemblyReference.cache
 C:\Users\hyunb\Desktop\RequiredProgram_Epub\RemoveNewLine\WPF_RemoveLine\obj\Release\MainWindow.g.cs
@@ -89,3 +81,4 @@ C:\Users\hyunb\Desktop\RequiredProgram_Epub\RemoveNewLine\WPF_RemoveLine\obj\Rel
 C:\Users\hyunb\Desktop\RequiredProgram_Epub\RemoveNewLine\WPF_RemoveLine\obj\Release\WPF_RemoveLine.csproj.CopyComplete
 C:\Users\hyunb\Desktop\RequiredProgram_Epub\RemoveNewLine\WPF_RemoveLine\obj\Release\RemoveLine.exe
 C:\Users\hyunb\Desktop\RequiredProgram_Epub\RemoveNewLine\WPF_RemoveLine\obj\Release\RemoveLine.pdb
+C:\Users\hyunb\Desktop\RequiredProgram_Epub\RemoveNewLine\WPF_RemoveLine\obj\Release\WPF_RemoveLine.csproj.Fody.CopyLocal.cache
