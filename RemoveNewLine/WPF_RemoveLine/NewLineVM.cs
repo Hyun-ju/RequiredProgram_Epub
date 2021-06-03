@@ -53,6 +53,14 @@ namespace WPF_RemoveLine
 			set { Set(ref _textBox2, value); }
 		}
 
+
+		private bool _isTable;
+		public bool IsTable
+		{
+			get { return _isTable; }
+			set { Set(ref _isTable, value); }
+		}
+
 		private bool _isCheckAll = true;
 		public bool IsCheckAll
 		{
@@ -109,8 +117,13 @@ namespace WPF_RemoveLine
 		}
 		#endregion
 
-
 		public void Convert()
+		{
+			if (!IsTable) LineConvert();
+			else CreateTable();
+		}
+
+		public void LineConvert()
 		{
 			var content = new List<string>();
 			var splitString = new string[] { "\r\n", "<p>", "</p>" };
@@ -280,6 +293,27 @@ namespace WPF_RemoveLine
 				if (item.StartsWith("<span") || item.StartsWith("<h")) TextBox2 += (item + "\n\n");
 				else TextBox2 += ("<p>" + item + "</p>" + "\n\n");
 			}
+		}
+
+		public void CreateTable()
+		{
+			var stringList = new List<string>();
+			stringList = TextBox1.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+
+			for (int i = 0; i < stringList.Count; i++)
+			{
+				stringList[i] = stringList[i].Trim().Replace(" ", "</td><td>");	
+				stringList[i] = stringList[i].Insert(0, "<tr>\n<td>");
+				stringList[i] += "</td>\n</tr>";
+			}
+
+
+			TextBox2 = "<table>\n<caption>[표]</caption>\n<thead><tr><th>필요하면 쓰세용..</th></tr></thead>\n<tbody>";
+			foreach (var item in stringList)
+			{
+				TextBox2 += (item + "\n");
+			}
+			TextBox2 += "</tbody>\n</table>";
 		}
 
 		public string MuntiBlankSpace(string checkString)

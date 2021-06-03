@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <asmv1:assembly xsi:schemaLocation="urn:schemas-microsoft-com:asm.v1 assembly.adaptive.xsd" manifestVersion="1.0" xmlns:asmv1="urn:schemas-microsoft-com:asm.v1" xmlns="urn:schemas-microsoft-com:asm.v2" xmlns:asmv2="urn:schemas-microsoft-com:asm.v2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:co.v1="urn:schemas-microsoft-com:clickonce.v1" xmlns:asmv3="urn:schemas-microsoft-com:asm.v3" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#" xmlns:co.v2="urn:schemas-microsoft-com:clickonce.v2">
-  <asmv1:assemblyIdentity name="RemoveLine.exe" version="1.0.0.9" publicKeyToken="0000000000000000" language="ko-KR" processorArchitecture="msil" type="win32" />
+  <asmv1:assemblyIdentity name="RemoveLine.exe" version="1.0.0.10" publicKeyToken="0000000000000000" language="ko-KR" processorArchitecture="msil" type="win32" />
   <description asmv2:iconFile="logo.ico" asmv2:publisher="HJ.Kim" asmv2:product="개행정리" asmv2:supportUrl="https://github.com/Hyun-ju/RequiredProgramDownload" co.v1:errorReportUrl="https://github.com/Hyun-ju/RequiredProgramDownload" xmlns="urn:schemas-microsoft-com:asm.v1" />
   <application />
   <entryPoint>
-    <assemblyIdentity name="RemoveLine" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
+    <assemblyIdentity name="RemoveLine" version="1.0.0.9" language="neutral" processorArchitecture="msil" />
     <commandLine file="RemoveLine.exe" parameters="" />
   </entryPoint>
   <co.v1:useManifestForTrust xmlns="urn:schemas-microsoft-com:asm.v1" />
@@ -44,14 +44,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="RemoveLine.exe" size="584160">
-      <assemblyIdentity name="RemoveLine" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="RemoveLine.exe" size="586720">
+      <assemblyIdentity name="RemoveLine" version="1.0.0.9" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>dZZhwb5JmwHnnQLCtkn3ViK5VJjNTqZ52I+jUwqrXq8=</dsig:DigestValue>
+        <dsig:DigestValue>YQ73d+FlM4pVQVd5M6LwxOycc5aj3fcSvBZyjuXQN/M=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

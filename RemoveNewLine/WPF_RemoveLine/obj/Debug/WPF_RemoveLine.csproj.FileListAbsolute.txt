@@ -118,3 +118,4 @@ C:\Users\hyunb\Desktop\RequiredProgram_Epub\RemoveNewLine\WPF_RemoveLine\obj\Deb
 C:\Users\hyunb\Desktop\RequiredProgram_Epub\RemoveNewLine\WPF_RemoveLine\obj\Debug\WPF_RemoveLine.csproj.CopyComplete
 C:\Users\hyunb\Desktop\RequiredProgram_Epub\RemoveNewLine\WPF_RemoveLine\obj\Debug\RemoveLine.exe
 C:\Users\hyunb\Desktop\RequiredProgram_Epub\RemoveNewLine\WPF_RemoveLine\obj\Debug\RemoveLine.pdb
+C:\Users\hyunb\Desktop\RequiredProgram_Epub\RemoveNewLine\WPF_RemoveLine\obj\Debug\WPF_RemoveLine.csprojAssemblyReference.cache
